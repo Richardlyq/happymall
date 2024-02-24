@@ -9,10 +9,21 @@ spring:
           filters:
             - RewritePath=/api/(?<segment>/?.*), /$\{segment}
 
+
+        - id: third-party
+          uri: lb://gulimall-third-party
+          predicates:
+            - Path=/api/thirdparty/**
+          filters:
+            - RewritePath=/api/thirdparty/(?<segment>/?.*), /$\{segment}
+
         - id: admin_route
           uri: lb://renren-fast
           predicates:
             - Path=/api/**
           filters:
             - RewritePath=/api/(?<segment>/?.*), /renren-fast/$\{segment}
-# http://localhost:88/api/captcha.jpg  -->  http://localhost:8080/renren-fast/captcha.jpg
+        # http://localhost:88/api/captcha.jpg  -->  http://localhost:8080/renren-fast/captcha.jpg
+
+
+

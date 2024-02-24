@@ -8,28 +8,44 @@
         <version>2.1.8.RELEASE</version>
         <relativePath/> <!-- lookup parent from repository -->
     </parent>
-    <groupId>com.atguigu.gulimall</groupId>
-    <artifactId>gulimall-product</artifactId>
+    <groupId>com.atguigu</groupId>
+    <artifactId>gulimall-third-party</artifactId>
     <version>0.0.1-SNAPSHOT</version>
-    <name>gulimall-product</name>
-    <description>gulimall-product</description>
+    <name>gulimall-third-party</name>
+    <description>gulimall-third-party</description>
     <properties>
         <java.version>1.8</java.version>
         <spring-cloud.version>Greenwich.SR3</spring-cloud.version>
     </properties>
     <dependencies>
+
         <dependency>
             <groupId>com.atguigu.gulimall</groupId>
             <artifactId>gulimall-common</artifactId>
             <version>0.0.1-SNAPSHOT</version>
+            <exclusions>
+                <exclusion>
+                    <groupId>com.baomidou</groupId>
+                    <artifactId>mybatis-plus-boot-starter</artifactId>
+                </exclusion>
+            </exclusions>
         </dependency>
 
+        <dependency>
+            <groupId>com.alibaba.cloud</groupId>
+            <artifactId>spring-cloud-starter-alicloud-oss</artifactId>
+            <version>2.2.0.RELEASE</version>
+        </dependency>
+
+        <!--<dependency>-->
+        <!--    <groupId>com.aliyun.oss</groupId>-->
+        <!--    <artifactId>aliyun-sdk-oss</artifactId>-->
+        <!--</dependency>-->
 
         <dependency>
             <groupId>org.springframework.boot</groupId>
             <artifactId>spring-boot-starter-web</artifactId>
         </dependency>
-
         <dependency>
             <groupId>org.springframework.cloud</groupId>
             <artifactId>spring-cloud-starter-openfeign</artifactId>
@@ -39,12 +55,6 @@
             <groupId>org.springframework.boot</groupId>
             <artifactId>spring-boot-starter-test</artifactId>
             <scope>test</scope>
-            <exclusions>
-                <exclusion>
-                    <groupId>org.junit.vintage</groupId>
-                    <artifactId>junit-vintage-engine</artifactId>
-                </exclusion>
-            </exclusions>
         </dependency>
     </dependencies>
     <dependencyManagement>
@@ -59,13 +69,13 @@
         </dependencies>
     </dependencyManagement>
 
-    <!--<build>-->
-    <!--    <plugins>-->
-    <!--        <plugin>-->
-    <!--            <groupId>org.springframework.boot</groupId>-->
-    <!--            <artifactId>spring-boot-maven-plugin</artifactId>-->
-    <!--        </plugin>-->
-    <!--    </plugins>-->
-    <!--</build>-->
+    <build>
+        <plugins>
+            <plugin>
+                <groupId>org.springframework.boot</groupId>
+                <artifactId>spring-boot-maven-plugin</artifactId>
+            </plugin>
+        </plugins>
+    </build>
 
 </project>
