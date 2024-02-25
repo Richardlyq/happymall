@@ -1,7 +1,11 @@
 package com.atguigu.gulimall.product.service.impl;
 
+import com.atguigu.gulimall.product.service.CategoryBrandRelationService;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
@@ -15,10 +19,16 @@ import com.atguigu.common.utils.Query;
 import com.atguigu.gulimall.product.dao.CategoryDao;
 import com.atguigu.gulimall.product.entity.CategoryEntity;
 import com.atguigu.gulimall.product.service.CategoryService;
+import org.springframework.transaction.annotation.Transactional;
+import org.springframework.util.CollectionUtils;
+import org.springframework.util.StringUtils;
 
 
 @Service("categoryService")
 public class CategoryServiceImpl extends ServiceImpl<CategoryDao, CategoryEntity> implements CategoryService {
+
+    @Autowired
+    private CategoryBrandRelationService categoryBrandRelationService;
 
     @Override
     public PageUtils queryPage(Map<String, Object> params) {
@@ -54,6 +64,38 @@ public class CategoryServiceImpl extends ServiceImpl<CategoryDao, CategoryEntity
         //TODO: 检查当前的菜单是否被别的地方引用
         baseMapper.deleteBatchIds(asList);
     }
+
+    //通过attrGroupId找到其对应父分类数组
+    @Override
+    public Long[] findParentCatelogPath(Long catelogId) {
+        ArrayList<Long> list = new ArrayList<>();
+        ArrayList<Long> catelogPath = findCatelogPath(catelogId, list);
+        Collections.reverse(catelogPath);
+        return catelogPath.toArray(new Long[catelogPath.size()]);
+    }
+
+    @Transactional
+    //级联修改，不仅修改本表，还要修改关联表，以保持数据同步
+    @Override
+    public void updateCascade(CategoryEntity category) {
+        //修改自身的表
+        this.updateById(category);
+        //修改级联的表
+        if (!StringUtils.isEmpty(category.getName())){
+            categoryBrandRelationService.updateCategory(category.getCatId(),category.getName());
+        }
+    }
+
+    //递归调用得到父分类路径 225, 34, 2
+    private ArrayList<Long> findCatelogPath(Long catelogId, ArrayList<Long> list) {
+        list.add(catelogId);
+        CategoryEntity byId = this.getById(catelogId);
+        if(byId.getParentCid() != 0){
+            findCatelogPath(byId.getParentCid(),list);
+        }
+        return list;
+    }
+
 
     //递归查找当前菜单的子菜单
     private List<CategoryEntity> getChildren(CategoryEntity currentMenu, List<CategoryEntity> allMenu){

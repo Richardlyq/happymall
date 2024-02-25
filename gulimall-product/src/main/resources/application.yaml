@@ -26,3 +26,7 @@ mybatis-plus:
       logic-not-delete-value: 0
 server:
   port: 10010
+
+logging:
+  level:
+    com.atguigu.gulimall.product.dao: debug

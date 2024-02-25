@@ -87,12 +87,12 @@ public class BrandController {
     }
 
     /**
-     * 修改
+     * 级联修改，不仅修改本表，还有个关联表的冗余字段
      */
     @RequestMapping("/update")
     //@RequiresPermissions("product:brand:update")
     public R update(@Validated({UpdateGroup.class})@RequestBody BrandEntity brand){
-		brandService.updateById(brand);
+		brandService.updateCascade(brand);
 
         return R.ok();
     }
