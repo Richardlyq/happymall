@@ -29,4 +29,4 @@ server:
 
 logging:
   level:
-    com.atguigu.gulimall.product.dao: debug
+    com.atguigu.gulimall: debug
