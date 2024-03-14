@@ -36,6 +36,9 @@ public class AttrEntity implements Serializable {
 	 * 属性图标
 	 */
 	private String icon;
+
+	//0-单选，1多选
+	private Integer valueType;
 	/**
 	 * 可选值列表[用逗号分隔]
 	 */
