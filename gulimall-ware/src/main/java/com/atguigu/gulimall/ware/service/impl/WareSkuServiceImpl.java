@@ -2,6 +2,7 @@ package com.atguigu.gulimall.ware.service.impl;
 
 import com.atguigu.common.utils.R;
 import com.atguigu.gulimall.ware.feign.ProductFeignService;
+import com.atguigu.gulimall.ware.vo.SkuHasStockVo;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -79,6 +80,19 @@ public class WareSkuServiceImpl extends ServiceImpl<WareSkuDao, WareSkuEntity> i
             }).collect(Collectors.toList());
             this.updateBatchById(entityList);
         }
+    }
+
+    @Override
+    public List<SkuHasStockVo> getSkusHasStock(List<Long> skuIds) {
+        List<SkuHasStockVo> voList = skuIds.stream().map(skuId -> {
+            SkuHasStockVo stockVo = new SkuHasStockVo();
+            //查询当前sku的总库存量
+            Long count = baseMapper.getSkuStock(skuId);
+            stockVo.setSkuId(skuId);
+            stockVo.setHasStock(count==null?false:count>0);
+            return stockVo;
+        }).collect(Collectors.toList());
+        return voList;
     }
 
 }
