@@ -1,6 +1,7 @@
 package com.atguigu.gulimall.product.service.impl;
 
 import com.atguigu.gulimall.product.service.CategoryBrandRelationService;
+import com.atguigu.gulimall.product.vo.Catelog2Vo;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -84,6 +85,46 @@ public class CategoryServiceImpl extends ServiceImpl<CategoryDao, CategoryEntity
         if (!StringUtils.isEmpty(category.getName())){
             categoryBrandRelationService.updateCategory(category.getCatId(),category.getName());
         }
+    }
+
+    @Override
+    public List<CategoryEntity> getLevel1Categorys() {
+
+        List<CategoryEntity> categoryEntities = baseMapper.selectList(new QueryWrapper<CategoryEntity>().eq("parent_cid", 0));
+        return categoryEntities;
+    }
+
+    @Override
+    public Map<String, List<Catelog2Vo>> getCatalogJson() {
+        //得到所有的一级分类
+        List<CategoryEntity> level1Categorys = getLevel1Categorys();
+        Map<String, List<Catelog2Vo>> parent_cid = level1Categorys.stream().collect(Collectors.toMap(k -> k.getCatId().toString(), v -> {
+            //得到所有的二级分类
+            List<CategoryEntity> categoryLevel2 = baseMapper.selectList(new QueryWrapper<CategoryEntity>().eq("parent_cid", v.getCatId()));
+            List<Catelog2Vo> catelog2Vos = null;
+            if (categoryLevel2 != null){
+                //封装Catelog2Vo数据
+                 catelog2Vos = categoryLevel2.stream().map(level2 -> {
+                    Catelog2Vo catelog2Vo = new Catelog2Vo(v.getCatId().toString(), null, level2.getCatId().toString(), level2.getName());
+                    //得到二级分类下对应的三级分类
+                    List<CategoryEntity> categoryLevel3 = baseMapper.selectList(new QueryWrapper<CategoryEntity>().eq("parent_cid", level2.getCatId()));
+                    List<Catelog2Vo.Catelog3Vo> catelog3Vos = null;
+                    if (categoryLevel3 != null){
+                        //封装三级分类的数据
+                        catelog3Vos = categoryLevel3.stream().map(level3 -> {
+                            Catelog2Vo.Catelog3Vo catelog3Vo = new Catelog2Vo.Catelog3Vo(level2.getCatId().toString(), level3.getCatId().toString(), level3.getName());
+                            return catelog3Vo;
+                        }).collect(Collectors.toList());
+                    }
+                    //设置二级分类下的三级分类数据
+                    catelog2Vo.setCatalog3List(catelog3Vos);
+                    return catelog2Vo;
+                }).collect(Collectors.toList());
+
+            }
+            return catelog2Vos;
+        }));
+        return parent_cid;
     }
 
     //递归调用得到父分类路径 225, 34, 2
