@@ -7,8 +7,12 @@ import com.atguigu.gulimall.product.service.CategoryService;
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import lombok.extern.slf4j.Slf4j;
 import org.junit.jupiter.api.Test;
+import org.redisson.api.RedissonClient;
+import org.redisson.client.RedisClient;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.data.redis.core.StringRedisTemplate;
+import org.springframework.data.redis.core.ValueOperations;
 
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
@@ -29,7 +33,26 @@ class GulimallProductApplicationTests {
     private CategoryService categoryService;
 
     @Autowired
+    private StringRedisTemplate stringRedisTemplate;
+
+//    @Autowired
 //    private OSSClient ossClient;
+
+    @Autowired
+    private RedissonClient redissonClient;
+
+    @Test
+    public void redisson(){
+        System.out.println(redissonClient);
+    }
+
+    @Test
+    public void teststringRedisTemplate(){
+        ValueOperations<String, String> ops = stringRedisTemplate.opsForValue();
+        ops.set("hello","world");
+        String hello = ops.get("hello");
+        System.out.println("hello = " + hello);
+    }
 
     @Test
     public void testFindParentCatelogPath(){
